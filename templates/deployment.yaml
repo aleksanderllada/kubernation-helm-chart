@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubernation-api
+  labels:
+    app: kubernation-api
+    chart: kubernation
+spec:
+  replicas: {{ .Values.api.replicas }}
+  selector:
+    matchLabels:
+      app: kubernation-api
+  template:
+    metadata:
+      labels:
+        app: kubernation-api
+    spec:
+      containers:
+      - name: kubernation-api
+        image: {{ .Values.api.image }}
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        resources:
+          requests:
+            memory: {{ .Values.api.memory.min }}
+            cpu: {{ .Values.api.cpu.min }}
+          limits:
+            memory: {{ .Values.api.memory.max }}
+            cpu: {{ .Values.api.cpu.max }}
+        env:
+        {{- range $key, $value := .Values.api.env }}
+        - name: "{{ $key }}"
+          value: "{{ $value }}"
+        {{- end }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubernation-dashboard
+  labels:
+    app: kubernation-dashboard
+    chart: kubernation
+spec:
+  replicas: {{ .Values.dashboard.replicas }}
+  selector:
+    matchLabels:
+      app: kubernation-dashboard
+  template:
+    metadata:
+      labels:
+        app: kubernation-dashboard
+    spec:
+      containers:
+      - name: kubernation-dashboard
+        image: {{ .Values.dashboard.image }}
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        resources:
+          requests:
+            memory: {{ .Values.dashboard.memory.min }}
+            cpu: {{ .Values.dashboard.cpu.min }}
+          limits:
+            memory: {{ .Values.dashboard.memory.max }}
+            cpu: {{ .Values.dashboard.cpu.max }}
+        env:
+        {{- range $key, $value := .Values.dashboard.env }}
+        - name: "{{ $key }}"
+          value: "{{ $value }}"
+        {{- end }}
